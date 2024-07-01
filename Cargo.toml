@@ -29,7 +29,7 @@ arrow-ord = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master" }
 arrow-json = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master" }
 arrow-select = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master" }
 arrow-schema = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master" }
-parquet = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"] }
+parquet = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master", features = ["object_store"] }
 object_store = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master" }
 #arrow = { path = "../arrow-rs/arrow" }
 #arrow-arith = { path = "../arrow-rs/arrow-arith" }
