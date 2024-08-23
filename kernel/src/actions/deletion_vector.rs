@@ -4,9 +4,10 @@ use std::io::{Cursor, Read};
 use std::sync::Arc;
 
 use bytes::Bytes;
-use delta_kernel_derive::Schema;
 use roaring::RoaringTreemap;
 use url::Url;
+
+use delta_kernel_derive::Schema;
 
 use crate::utils::require;
 use crate::{DeltaResult, Error, FileSystemClient};
@@ -165,6 +166,16 @@ impl DeletionVectorDescriptor {
             }
         }
     }
+
+    /// Materialize the row indexes of the deletion vector as a Vec<u64> in which each element
+    /// represents a row index that is deleted from the table.
+    pub fn row_indexes(
+        &self,
+        fs_client: Arc<dyn FileSystemClient>,
+        parent: &Url,
+    ) -> DeltaResult<Vec<u64>> {
+        Ok(self.read(fs_client, parent)?.into_iter().collect())
+    }
 }
 
 enum Endian {
@@ -223,15 +234,40 @@ pub(crate) fn treemap_to_bools(treemap: RoaringTreemap) -> Vec<bool> {
     }
 }
 
+/// helper function to split an `Option<Vec<bool>>`. Because deletion vectors apply to a whole file,
+/// but parquet readers can chunk the file, there is a need to split the vector up.
+/// If the passed vector is Some(vector):
+///   - If `split_index < vector.len()`, split `vector` at `split_index`. The passed vector is
+///     modified in place, and the split off component is returned.
+///   - If `split_index` >= vector.len()` will return None. If `extend` is Some(b), the passed
+///     vector will be extended with `b` to have a length of `split_index`. If `extend` is `None`,
+///     do nothing and return `None`
+/// If the passed `vector` is `None`, do nothing and return None
+pub fn split_vector(
+    vector: Option<&mut Vec<bool>>,
+    split_index: usize,
+    extend: Option<bool>,
+) -> Option<Vec<bool>> {
+    match vector {
+        Some(vector) if split_index < vector.len() => Some(vector.split_off(split_index)),
+        Some(vector) if extend.is_some() => {
+            vector.extend(std::iter::repeat(extend.unwrap()).take(split_index - vector.len()));
+            None
+        }
+        _ => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use roaring::RoaringTreemap;
     use std::path::PathBuf;
 
-    use super::*;
+    use roaring::RoaringTreemap;
+
     use crate::{engine::sync::SyncEngine, Engine};
 
     use super::DeletionVectorDescriptor;
+    use super::*;
 
     fn dv_relative() -> DeletionVectorDescriptor {
         DeletionVectorDescriptor {
@@ -357,5 +393,17 @@ mod tests {
         expected[4294967297] = false;
         expected[4294967300] = false;
         assert_eq!(bools, expected);
+    }
+
+    #[test]
+    fn test_dv_row_indexes() {
+        let example = dv_inline();
+        let sync_engine = SyncEngine::new();
+        let fs_client = sync_engine.get_file_system_client();
+        let parent = Url::parse("http://not.used").unwrap();
+        let row_idx = example.row_indexes(fs_client, &parent).unwrap();
+
+        assert_eq!(row_idx.len(), 6);
+        assert_eq!(&row_idx, &[3, 4, 7, 11, 18, 29]);
     }
 }
