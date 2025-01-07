@@ -22,18 +22,30 @@ rust-version = "1.80"
 version = "0.6.0"
 
 [workspace.dependencies]
-arrow = { version = ">=53, <54" }
-arrow-arith = { version = ">=53, <54" }
-arrow-array = { version = ">=53, <54" }
-arrow-buffer = { version = ">=53, <54" }
-arrow-cast = { version = ">=53, <54" }
-arrow-data = { version = ">=53, <54" }
-arrow-ord = { version = ">=53, <54" }
-arrow-json = { version = ">=53, <54" }
-arrow-select = { version = ">=53, <54" }
-arrow-schema = { version = ">=53, <54" }
-parquet = { version = ">=53, <54", features = ["object_store"] }
-object_store = { version = ">=0.11, <0.12" }
+#arrow = { path="../arrow-rs/arrow"  }
+#arrow-arith = { path="../arrow-rs/arrow"  }
+#arrow-array = { path="../arrow-rs/arrow"  }
+#arrow-buffer = { path="../arrow-rs/arrow"  }
+#arrow-cast = { path="../arrow-rs/arrow"  }
+#arrow-data = { path="../arrow-rs/arrow"  }
+#arrow-ord = { path="../arrow-rs/arrow"  }
+#arrow-json = { path="../arrow-rs/arrow"  }
+#arrow-select = { path="../arrow-rs/arrow"  }
+#arrow-schema = { path="../arrow-rs/arrow"  }
+#parquet = { path="../arrow-rs/arrow" , features = ["object_store"] }
+#object_store = { path="../arrow-rs/arrow"}
+arrow = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-arith = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-array = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-buffer = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-cast = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-data = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-ord = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-json = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-select = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+arrow-schema = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master"   }
+parquet = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master", features = ["object_store"] }
+object_store = { git="https://github.com/Nekit2217/arrow-rs", branch="bm-master" }
 hdfs-native-object-store = "0.12.0"
 hdfs-native = "0.10.0"
 walkdir = "2.5.0"
