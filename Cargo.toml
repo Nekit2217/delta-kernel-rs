@@ -6,6 +6,7 @@ members = [
     "kernel",
     "kernel/examples/*",
     "test-utils",
+    "feature-tests",
 ]
 # Only check / build main crates by default (check all with `--workspace`)
 default-members = ["acceptance", "kernel"]
@@ -19,7 +20,7 @@ license = "Apache-2.0"
 repository = "https://github.com/delta-io/delta-kernel-rs"
 readme = "README.md"
 rust-version = "1.80"
-version = "0.6.0"
+version = "0.6.1"
 
 [workspace.dependencies]
 #arrow = { path="../arrow-rs/arrow"  }
